@@ -2,6 +2,8 @@
  * ASSETS REPOSITORY (Centralized Links)
  */
 const ASSETS_REPOSITORY = {
+    // ELECTRICAL----------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // ELECTRICAL POWER SYSTEM
     'eps_1': [
         { 
             _id: 'eps_1_01',
@@ -10,28 +12,125 @@ const ASSETS_REPOSITORY = {
             type: 'Google Drive',
             size: 'Cloud Access'
         }
-    ]
-};
+    ],
+    // ENERGY AUDIT AND MANAGEMENT
+    'ea': [
+        { 
+            _id: 'ea_01',
+            name: 'Energy Audit and Management.pdf', 
+            url: 'https://drive.google.com/file/d/1q-MB2oD9q54au3KN1-sp952lm0JQjMDq/view?usp=drive_link',type: 'Google Drive',
+            size: 'Cloud Access'
+        }
+    ],
+    // ELECTRICAL MACHINE_1
+    'em_1': [
+        { 
+            _id: 'em_1_01',
+            name: 'Electromechanical Energy Conversion .pdf', 
+            url: 'https://drive.google.com/file/d/1paAyns5WFiXfvUFVvkWKcGX_PR1rlQ6i/view?usp=drive_link',
+            type: 'Google Drive',
+            size: 'Cloud Access'
+        },
+        { 
+            _id: 'em_1_02',
+            name: 'Magnetic Circuits.pdf', 
+            url: 'https://drive.google.com/file/d/1jPGOSFCLSmawZdbUwmJJn3xJ7DXV159v/view?usp=drive_link',
+            type: 'Google Drive',
+            size: 'Cloud Access'
+        },
+        { 
+            _id: 'em_1_03',
+            name: 'Single Phase Transformers.pdf', 
+            url: 'https://drive.google.com/file/d/1Z4YxkHqubPvCpmiXVbXIZ40rNyyMNb9X/view?usp=drive_link',
+            type: 'Google Drive',
+            size: 'Cloud Access'
+        },
+        { 
+            _id: 'em_1_04',
+            name: 'Autotransformers.pdf', 
+            url: 'https://drive.google.com/file/d/1ENHgCXk_4DAmtCYJoiiuJcFjoOEDPgIG/view?usp=drive_link',
+            type: 'Google Drive',
+            size: 'Cloud Access'
+        },
+        { 
+            _id: 'em_1_05',
+            name: 'EM_1-Resource-v5.pdf', 
+            url: 'https://drive.google.com/file/d/1gPzHy1BraToZNbDrnZrpypjQP8l3wPxR/view?usp=drive_link',
+            type: 'Google Drive',
+            size: 'Cloud Access'
+        }
+    ],
+    // ELECTRICAL MACHINE_2
+    // ELECTRICAL CIRCUIT ANALYSIS
+    'eca': [
+        { 
+            _id: 'eca_01',
+            name: 'Electromechanical Energy Conversion .pdf', 
+            url: 'https://drive.google.com/file/d/1paAyns5WFiXfvUFVvkWKcGX_PR1rlQ6i/view?usp=drive_link',
+            type: 'Google Drive',
+            size: 'Cloud Access'
+        },
+        { 
+            _id: 'eca_02',
+            name: 'Magnetic Circuits.pdf', 
+            url: 'https://drive.google.com/file/d/1jPGOSFCLSmawZdbUwmJJn3xJ7DXV159v/view?usp=drive_link',
+            type: 'Google Drive',
+            size: 'Cloud Access'
+        },
+        { 
+            _id: 'eca_03',
+            name: 'Single Phase Transformers.pdf', 
+            url: 'https://drive.google.com/file/d/1Z4YxkHqubPvCpmiXVbXIZ40rNyyMNb9X/view?usp=drive_link',
+            type: 'Google Drive',
+            size: 'Cloud Access'
+        },
+        { 
+            _id: 'eca_04',
+            name: 'Autotransformers.pdf', 
+            url: 'https://drive.google.com/file/d/1ENHgCXk_4DAmtCYJoiiuJcFjoOEDPgIG/view?usp=drive_link',
+            type: 'Google Drive',
+            size: 'Cloud Access'
+        },
+        { 
+            _id: 'eca_05',
+            name: 'EM_1-Resource-v5.pdf', 
+            url: 'https://drive.google.com/file/d/1gPzHy1BraToZNbDrnZrpypjQP8l3wPxR/view?usp=drive_link',
+            type: 'Google Drive',
+            size: 'Cloud Access'
+        }
+    ],
 
+    // ELCTRONICS
+    'dsp': [
+        { 
+            _id: 'dsp_01',
+            name: 'Digital Signal Processing.pdf', 
+            url: 'https://drive.google.com/file/d/19n76SyuXczw9eeUTsH1iSTJWSHJYClYk/view?usp=drive_link',type: 'Google Drive',
+            size: 'Cloud Access'
+        }
+    ],
+};
+// https://drive.google.com/file/d/1gPzHy1BraToZNbDrnZrpypjQP8l3wPxR/view?usp=drive_link
 /**
  * SUBJECT DATA STRUCTURE (Organized by Branch)
  * isMain: true - Only these subjects show up on the "All Streams" landing page.
  */
 const BRANCH_DATA = {
     'Electrical': [
-        { _id: 'e1', isMain: true, name: 'Electrical Circuit Analysis', branch: 'Electrical', description: 'Circuit laws, network theorems and analysis.', icon: 'zap', theme: 'branch-elec' },
-        { _id: 'e2', name: 'Electrical Machines 1', branch: 'Electrical', description: 'DC machines and transformers.', icon: 'zap', theme: 'branch-elec' },
-        { _id: 'e3', name: 'Electrical Machines 2', branch: 'Electrical', description: 'Induction and synchronous machines.', icon: 'zap', theme: 'branch-elec' },
+        { _id: 'eca', isMain: true, name: 'Electrical Circuit Analysis', branch: 'Electrical', description: 'Circuit laws, network theorems and analysis.', icon: 'zap', theme: 'branch-elec' },
+        { _id: 'em_1', name: 'Electrical Machines 1', branch: 'Electrical', description: 'DC machines and transformers.', icon: 'zap', theme: 'branch-elec' },
+        { _id: 'em2', name: 'Electrical Machines 2', branch: 'Electrical', description: 'Induction and synchronous machines.', icon: 'zap', theme: 'branch-elec' },
         { _id: 'e4', name: 'Network Analysis and Synthesis', branch: 'Electrical', description: 'Two port networks and network theorems.', icon: 'zap', theme: 'branch-elec' },
         { _id: 'eps_1', isMain: true, name: 'Electrical Power System', branch: 'Electrical', description: 'Generation, transmission and distribution.', icon: 'zap', theme: 'branch-elec' },
         { _id: 'e6', name: 'Power Electronics', branch: 'Electrical', description: 'Converters, inverters and power devices.', icon: 'zap', theme: 'branch-elec' },
+        { _id: 'ea', name: 'Energy Audit and Management', branch: 'Electrical', description: 'Energy Audit and Management.', icon: 'zap', theme: 'branch-elec' },
         { _id: 'e7', name: 'Electrical Drives', branch: 'Electrical', description: 'Speed control of electric motors.', icon: 'zap', theme: 'branch-elec' }
     ],
     'Electronics': [
         { _id: 'x1', name: 'Electronic Devices and Circuits', branch: 'Electronics', description: 'Diodes, transistors and amplifiers.', icon: 'activity', theme: 'branch-extc' },
         { _id: 'x2', isMain: true, name: 'Digital Electronics', branch: 'Electronics', description: 'Logic gates, flip flops and counters.', icon: 'activity', theme: 'branch-extc' },
         { _id: 'x3', isMain: true, name: 'Microprocessor and Microcontroller', branch: 'Electronics', description: '8085 architecture and embedded systems.', icon: 'activity', theme: 'branch-extc' },
-        { _id: 'x4', name: 'Digital Signal Processing', branch: 'Electronics', description: 'Discrete signals and digital filters.', icon: 'activity', theme: 'branch-extc' },
+        { _id: 'dsp', name: 'Digital Signal Processing', branch: 'Electronics', description: 'Discrete signals and digital filters.', icon: 'activity', theme: 'branch-extc' },
         { _id: 'x5', name: 'Modern Instrumentation Techniques', branch: 'Electronics', description: 'Sensors and measurement systems.', icon: 'activity', theme: 'branch-extc' }
     ],
     'CS & IT': [
