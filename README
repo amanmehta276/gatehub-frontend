@@ -1,121 +1,97 @@
-# 🚀 GateHub
+# GateHub Frontend
 
-### Engineering Knowledge Vault
+Modern engineering resource platform for students and faculty. Built with vanilla HTML, CSS, and JavaScript.
 
-GateHub is a centralized platform where engineering students can **discover, upload, and access academic resources** like notes, PDFs, assignments, and study materials organized by **branch and subject**.
-
-The goal of GateHub is to make learning resources **easy to find, organized, and accessible for every engineering student.**
-
----
-
-## 🌟 Features
-
-* 📚 Browse subjects by engineering branch
-* 📂 Upload and download study materials
-* 🔍 Search for notes, PDFs, and resources easily
-* 👨‍🎓 Student & contributor login system
-* 📊 Organized subject-wise resource library
-* ⚡ Fast and minimal user interface
-
----
-
-## 🛠 Tech Stack
-
-**Frontend**
-
-* HTML
-* CSS
-* JavaScript
-* TailwindCSS
-
-**Backend**
-
-* Node.js
-* Express.js
-
-**Database**
-
-* MongoDB
-
-**Deployment**
-
-* GitHub Pages (Frontend)
-
----
-
-## 📁 Project Structure
-
+## 🌐 Live URL
 ```
-GateHub
-│
-├── frontend
-│   ├── index.html
-│   ├── style.css
-│   ├── script.js
-│
-├── backend
-│   ├── server.js
-│   ├── routes
-│   ├── controllers
-│   └── middleware
-│
-└── README.md
+https://projectalps.netlify.app
 ```
 
----
+## 📖 About
 
-## 🎯 Purpose
+GateHub is a centralized academic library for engineering students. Students can browse subjects by branch, view PDF notes, and save files for offline access. Admins can upload new PDFs directly from the dashboard.
 
-Engineering students often struggle to find **reliable and organized study material**.
-GateHub solves this by creating a **community-driven academic resource hub**.
+## ✨ Features
 
-Students can:
+- Browse subjects by engineering branch (Electrical, Electronics, CS & IT, Mechanical, Civil)
+- View and download PDF notes
+- Save files to local vault for offline access
+- Admin panel to upload PDFs and manage subjects
+- Search subjects in real time
+- Fully responsive — works on mobile and desktop
+- JWT-based authentication for students and admins
 
-* Access quality resources
-* Share their own notes
-* Learn collaboratively
+## 🛠️ Tech Stack
 
----
+| Technology | Purpose |
+|---|---|
+| HTML5 | Structure |
+| Tailwind CSS (CDN) | Styling |
+| Vanilla JavaScript | Logic and API calls |
+| Lucide Icons | Icon library |
+| Fetch API | Backend communication |
 
-## 🚧 Project Status
+## 📁 Folder Structure
 
-This project is currently **under development**.
-New features and improvements are being added regularly.
+```
+frontend/
+├── index.html      # Main HTML file
+├── script.js       # All JavaScript logic
+├── style.css       # Custom styles
+└── favicon.ico     # Site icon
+```
 
----
+## 🔧 Configuration
 
-## 💡 Future Improvements
+In `script.js` line 6, set your backend URL:
 
-* User profiles
-* Resource rating system
-* AI-powered resource recommendation
-* Branch-specific dashboards
-* Advanced search filters
+```javascript
+// Local development
+const API_BASE = 'http://localhost:5000/api';
 
----
+// Production
+const API_BASE = 'https://gatehub-backend.onrender.com/api';
+```
 
-## 🤝 Contributing
+## 🏃 Running Locally
 
-Contributions are welcome!
+No build step needed. Just open with Live Server in VS Code:
 
-If you would like to contribute:
+1. Install **Live Server** extension in VS Code
+2. Right click `index.html` → **Open with Live Server**
+3. Opens at `http://127.0.0.1:5500`
 
-1. Fork the repository
-2. Create a new branch
-3. Make your changes
-4. Submit a pull request
+Make sure your backend is running locally at `http://localhost:5000`.
 
----
+## 🚢 Deployment
 
-## 👨‍💻 Author
+Deployed on **Netlify** via GitHub.
 
-**Aman Mehta**
-Engineering Student | Developer | AI Enthusiast
+- Connect `gatehub-frontend` GitHub repo to Netlify
+- Build command: (empty)
+- Publish directory: (empty)
+- Auto-deploys on every push to `main` branch
 
----
+## 👤 Admin Access
 
-## ⭐ Support
+```
+Email:    admin@gatehub.com
+Password: Admin@1234
+```
 
-If you like this project, consider **starring the repository** to support development.
+## 🔗 Backend Repository
 
----
+```
+https://github.com/amanmehta276/gatehub-backend
+```
+
+Backend API:
+```
+https://gatehub-backend.onrender.com
+```
+
+## 📝 Notes
+
+- Backend hosted on Render free tier — first load may take 2-3 minutes if server is sleeping
+- PDF files stored on Supabase Storage
+- Subject and user data stored in MongoDB Atlas
