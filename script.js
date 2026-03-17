@@ -20,7 +20,7 @@ let state = {
     selectedFile:     null,
     currentSubjectId: null,
     assetCountCache:  {},
-    subjects:         [],   // loaded from API
+    subjects:         [],
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -35,7 +35,6 @@ async function apiRequest(path, options = {}) {
     return data;
 }
 
-// Auth
 async function apiRegister(name, email, password) {
     return apiRequest('/auth/register', {
         method:  'POST',
@@ -52,7 +51,6 @@ async function apiLogin(email, password) {
     });
 }
 
-// Subjects
 async function apiFetchSubjects(branch) {
     const query = branch && branch !== 'All' ? `?branch=${encodeURIComponent(branch)}` : '';
     const data  = await apiRequest(`/subjects${query}`);
@@ -74,7 +72,6 @@ async function apiDeleteSubject(id) {
     });
 }
 
-// Files
 async function apiFetchFiles(subjectId) {
     const data = await apiRequest(`/files/${subjectId}`);
     return data.files;
@@ -196,7 +193,6 @@ const app = {
         }).join('');
         lucide.createIcons();
 
-        // Hydrate counts in background
         data.forEach(subj => {
             if (state.assetCountCache[subj._id] !== undefined) return;
             apiFetchFiles(subj._id).then(files => {
@@ -212,12 +208,9 @@ const app = {
         try {
             const all = await apiFetchSubjects(state.currentBranch);
             state.subjects = all;
-
-            // On All Streams, show only isMain subjects
             const data = state.currentBranch === 'All'
                 ? all.filter(s => s.isMain)
                 : all;
-
             app.renderSubjects(data);
         } catch (err) {
             const grid = document.getElementById('subjects-grid');
@@ -320,7 +313,6 @@ const app = {
         }
     },
 
-    // ── Admin: create subject ─────────────────────────────────────────────────
     createSubject: async () => {
         const name   = document.getElementById('new-subj-name').value.trim();
         const branch = document.getElementById('new-subj-branch').value;
@@ -329,7 +321,6 @@ const app = {
         if (!name) return alert('Please enter a subject name.');
         if (!state.token) return alert('Please log in as admin first.');
 
-        // Generate _id from name
         const _id = name.toLowerCase().replace(/\s+/g, '_').replace(/[^\w]/g, '').slice(0, 20) + '_' + Date.now().toString().slice(-4);
 
         ui.setLoading(true);
@@ -345,7 +336,6 @@ const app = {
         }
     },
 
-    // ── Admin: delete subject ─────────────────────────────────────────────────
     deleteSubject: async (id) => {
         if (!confirm('Remove this subject hub? All its files will still exist in the database.')) return;
         try {
@@ -384,6 +374,69 @@ const app = {
         } catch (err) {
             ui.setLoading(false);
             alert(`Upload failed: ${err.message}`);
+        }
+    },
+
+    // ── NEW: Switch between Upload / Add Link tabs ────────────────────────────
+    switchUploadTab: (tab) => {
+        const uploadPanel = document.getElementById('panel-upload');
+        const linkPanel   = document.getElementById('panel-link');
+        const uploadTab   = document.getElementById('tab-upload');
+        const linkTab     = document.getElementById('tab-link');
+
+        if (tab === 'upload') {
+            uploadPanel.classList.remove('hidden');
+            linkPanel.classList.add('hidden');
+            uploadTab.classList.add('bg-white', 'shadow-sm', 'text-indigo-600');
+            uploadTab.classList.remove('text-slate-400');
+            linkTab.classList.remove('bg-white', 'shadow-sm', 'text-indigo-600');
+            linkTab.classList.add('text-slate-400');
+        } else {
+            linkPanel.classList.remove('hidden');
+            uploadPanel.classList.add('hidden');
+            linkTab.classList.add('bg-white', 'shadow-sm', 'text-indigo-600');
+            linkTab.classList.remove('text-slate-400');
+            uploadTab.classList.remove('bg-white', 'shadow-sm', 'text-indigo-600');
+            uploadTab.classList.add('text-slate-400');
+        }
+    },
+
+    // ── NEW: Save external link (Google Drive etc) ────────────────────────────
+    saveLink: async () => {
+        const name = document.getElementById('link-name').value.trim();
+        const url  = document.getElementById('link-url').value.trim();
+        const size = document.getElementById('link-size').value.trim();
+
+        if (!name) return alert('Please enter a file name.');
+        if (!url)  return alert('Please paste a URL.');
+        if (!state.currentSubjectId) return alert('No subject selected.');
+        if (!state.token) return alert('Please log in as admin first.');
+
+        ui.setLoading(true);
+        try {
+            await apiRequest('/files/link', {
+                method:  'POST',
+                headers: { ...authHeader(), 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    subjectId: state.currentSubjectId,
+                    name,
+                    url,
+                    type: url.includes('drive.google.com') ? 'Google Drive' : 'External',
+                    size: size || 'Cloud Access',
+                }),
+            });
+
+            document.getElementById('link-name').value = '';
+            document.getElementById('link-url').value  = '';
+            document.getElementById('link-size').value = '';
+
+            delete state.assetCountCache[state.currentSubjectId];
+            ui.hideModal();
+            ui.setLoading(false);
+            app.fetchFiles(state.currentSubjectId);
+        } catch (err) {
+            ui.setLoading(false);
+            alert(`Failed to save link: ${err.message}`);
         }
     },
 
