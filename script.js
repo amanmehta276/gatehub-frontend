@@ -1,14 +1,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  GateHub — Frontend Script v3
-//  Subjects now loaded from MongoDB. Admin can add/delete subjects.
 // ─────────────────────────────────────────────────────────────────────────────
 
 // const API_BASE = 'http://localhost:5000/api';
 const API_BASE = 'https://gatehub-backend.onrender.com/api';
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  STATE
-// ─────────────────────────────────────────────────────────────────────────────
 let state = {
     user:             JSON.parse(localStorage.getItem('user'))  || null,
     token:            localStorage.getItem('token')             || null,
@@ -23,9 +19,6 @@ let state = {
     subjects:         [],
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  API HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
 const authHeader = () => ({ 'Authorization': `Bearer ${state.token}` });
 
 async function apiRequest(path, options = {}) {
@@ -82,7 +75,6 @@ async function apiUploadFile(subjectId, displayName, fileObj) {
     form.append('file',      fileObj);
     form.append('subjectId', subjectId);
     if (displayName) form.append('name', displayName);
-
     return apiRequest('/files/upload', {
         method:  'POST',
         headers: authHeader(),
@@ -97,9 +89,6 @@ async function apiDeleteFile(fileId) {
     });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  APP
-// ─────────────────────────────────────────────────────────────────────────────
 const app = {
     getAllSubjects: () => state.subjects,
 
@@ -123,7 +112,6 @@ const app = {
         const toggleBtn = document.getElementById('auth-toggle');
         const icon      = document.getElementById('auth-main-icon');
         document.getElementById('name-field').classList.add('hidden');
-
         if (mode === 'admin') {
             title.textContent    = 'Admin Gateway';
             subtitle.textContent = 'Management verification';
@@ -192,7 +180,6 @@ const app = {
             </div>`;
         }).join('');
         lucide.createIcons();
-
         data.forEach(subj => {
             if (state.assetCountCache[subj._id] !== undefined) return;
             apiFetchFiles(subj._id).then(files => {
@@ -208,13 +195,11 @@ const app = {
         try {
             const all = await apiFetchSubjects(state.currentBranch);
             state.subjects = all;
-            const data = state.currentBranch === 'All'
-                ? all.filter(s => s.isMain)
-                : all;
+            const data = state.currentBranch === 'All' ? all.filter(s => s.isMain) : all;
             app.renderSubjects(data);
         } catch (err) {
-            const grid = document.getElementById('subjects-grid');
-            grid.innerHTML = `<div class="col-span-full py-10 text-center text-rose-400 font-bold text-sm">Failed to load subjects. Is the backend running?</div>`;
+            document.getElementById('subjects-grid').innerHTML =
+                `<div class="col-span-full py-10 text-center text-rose-400 font-bold text-sm">Failed to load subjects. Is the backend running?</div>`;
         }
         ui.setLoading(false);
     },
@@ -222,17 +207,14 @@ const app = {
     fetchFiles: async (subjId) => {
         ui.setLoading(true);
         state.currentSubjectId = subjId;
-
         const subject = state.subjects.find(s => s._id === subjId);
         document.getElementById('current-subject-title').textContent = subject?.name || 'Hub Details';
         document.getElementById('current-subject-desc').textContent  = subject?.description || '';
         document.getElementById('file-branch-tag').textContent       = subject?.branch || 'General';
-
         const list = document.getElementById('files-list');
         try {
             const files = await apiFetchFiles(subjId);
             state.assetCountCache[subjId] = files.length;
-
             if (files.length === 0) {
                 list.innerHTML = `
                     <div class="bg-white/50 border-2 border-dashed border-slate-200 p-10 rounded-[2rem] text-center">
@@ -274,7 +256,7 @@ const app = {
         } catch (err) {
             list.innerHTML = `
                 <div class="bg-rose-50 border border-rose-100 p-8 rounded-[2rem] text-center">
-                    <p class="text-rose-400 font-bold text-sm">Failed to load resources. Is the backend running?</p>
+                    <p class="text-rose-400 font-bold text-sm">Failed to load resources.</p>
                     <p class="text-rose-300 text-xs mt-2">${err.message}</p>
                 </div>`;
         }
@@ -296,10 +278,8 @@ const app = {
             });
             localStorage.setItem('vault', JSON.stringify(state.vault));
         }
-        const link  = document.createElement('a');
-        link.href   = fileObj.url;
-        link.target = '_blank';
-        link.click();
+        const link = document.createElement('a');
+        link.href = fileObj.url; link.target = '_blank'; link.click();
     },
 
     deleteFile: async (fileId, subjId) => {
@@ -308,92 +288,93 @@ const app = {
             await apiDeleteFile(fileId);
             delete state.assetCountCache[subjId];
             app.fetchFiles(subjId);
-        } catch (err) {
-            alert(`Delete failed: ${err.message}`);
-        }
+        } catch (err) { alert(`Delete failed: ${err.message}`); }
     },
 
     createSubject: async () => {
         const name   = document.getElementById('new-subj-name').value.trim();
         const branch = document.getElementById('new-subj-branch').value;
         const desc   = document.getElementById('new-subj-desc')?.value.trim() || '';
-
         if (!name) return alert('Please enter a subject name.');
         if (!state.token) return alert('Please log in as admin first.');
-
         const _id = name.toLowerCase().replace(/\s+/g, '_').replace(/[^\w]/g, '').slice(0, 20) + '_' + Date.now().toString().slice(-4);
-
         ui.setLoading(true);
         try {
             await apiCreateSubject({ _id, name, branch, description: desc });
             state.assetCountCache = {};
-            ui.hideModal();
-            ui.setLoading(false);
-            app.fetchSubjects();
-        } catch (err) {
-            ui.setLoading(false);
-            alert(`Failed to create subject: ${err.message}`);
-        }
+            ui.hideModal(); ui.setLoading(false); app.fetchSubjects();
+        } catch (err) { ui.setLoading(false); alert(`Failed: ${err.message}`); }
     },
 
     deleteSubject: async (id) => {
-        if (!confirm('Remove this subject hub? All its files will still exist in the database.')) return;
+        if (!confirm('Remove this subject hub?')) return;
         try {
             await apiDeleteSubject(id);
             state.assetCountCache = {};
             app.fetchSubjects();
-        } catch (err) {
-            alert(`Delete failed: ${err.message}`);
-        }
+        } catch (err) { alert(`Delete failed: ${err.message}`); }
     },
 
+    // ── File selection with size check ────────────────────────────────────────
     handleFileSelection: (e) => {
         const file = e.target.files[0];
-        if (file) {
+        if (!file) return;
+        const sizeMB = file.size / 1024 / 1024;
+        const info   = document.getElementById('file-info');
+        if (sizeMB > 50) {
+            info.innerHTML = `⚠️ File is <b>${sizeMB.toFixed(1)} MB</b> — too large (max 50 MB).<br>
+                <span class="text-amber-600">Upload to Google Drive and use <b>Add Link</b> tab instead.</span>`;
+            info.classList.remove('hidden');
+            state.selectedFile = null;
+        } else {
             state.selectedFile = file;
-            const info = document.getElementById('file-info');
-            info.textContent = `Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+            info.textContent = `✅ Selected: ${file.name} (${sizeMB.toFixed(2)} MB)`;
             info.classList.remove('hidden');
         }
     },
 
+    // ── Upload file to Supabase ───────────────────────────────────────────────
     uploadFile: async () => {
-        if (!state.selectedFile)     return alert('Please select a file first.');
+        if (!state.selectedFile)     return alert('Please select a file first (max 50 MB).');
         if (!state.currentSubjectId) return alert('No subject selected.');
         if (!state.token)            return alert('Please log in as admin first.');
-
         ui.setLoading(true);
         try {
-            await apiUploadFile(state.currentSubjectId, state.selectedFile.name, state.selectedFile);
+            const result = await apiUploadFile(
+                state.currentSubjectId,
+                state.selectedFile.name,
+                state.selectedFile
+            );
             delete state.assetCountCache[state.currentSubjectId];
             state.selectedFile = null;
             document.getElementById('file-info').classList.add('hidden');
             ui.hideModal();
             ui.setLoading(false);
             app.fetchFiles(state.currentSubjectId);
+            // Storage warning from backend
+            if (result.warning) {
+                setTimeout(() => alert(`${result.warning}\n\nGo to supabase.com and create a new project when ready.`), 500);
+            }
         } catch (err) {
             ui.setLoading(false);
             alert(`Upload failed: ${err.message}`);
         }
     },
 
-    // ── NEW: Switch between Upload / Add Link tabs ────────────────────────────
+    // ── Switch Upload / Add Link tabs ─────────────────────────────────────────
     switchUploadTab: (tab) => {
         const uploadPanel = document.getElementById('panel-upload');
         const linkPanel   = document.getElementById('panel-link');
         const uploadTab   = document.getElementById('tab-upload');
         const linkTab     = document.getElementById('tab-link');
-
         if (tab === 'upload') {
-            uploadPanel.classList.remove('hidden');
-            linkPanel.classList.add('hidden');
+            uploadPanel.classList.remove('hidden'); linkPanel.classList.add('hidden');
             uploadTab.classList.add('bg-white', 'shadow-sm', 'text-indigo-600');
             uploadTab.classList.remove('text-slate-400');
             linkTab.classList.remove('bg-white', 'shadow-sm', 'text-indigo-600');
             linkTab.classList.add('text-slate-400');
         } else {
-            linkPanel.classList.remove('hidden');
-            uploadPanel.classList.add('hidden');
+            linkPanel.classList.remove('hidden'); uploadPanel.classList.add('hidden');
             linkTab.classList.add('bg-white', 'shadow-sm', 'text-indigo-600');
             linkTab.classList.remove('text-slate-400');
             uploadTab.classList.remove('bg-white', 'shadow-sm', 'text-indigo-600');
@@ -401,17 +382,15 @@ const app = {
         }
     },
 
-    // ── NEW: Save external link (Google Drive etc) ────────────────────────────
+    // ── Save external link ────────────────────────────────────────────────────
     saveLink: async () => {
         const name = document.getElementById('link-name').value.trim();
         const url  = document.getElementById('link-url').value.trim();
         const size = document.getElementById('link-size').value.trim();
-
         if (!name) return alert('Please enter a file name.');
         if (!url)  return alert('Please paste a URL.');
         if (!state.currentSubjectId) return alert('No subject selected.');
         if (!state.token) return alert('Please log in as admin first.');
-
         ui.setLoading(true);
         try {
             await apiRequest('/files/link', {
@@ -419,20 +398,16 @@ const app = {
                 headers: { ...authHeader(), 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     subjectId: state.currentSubjectId,
-                    name,
-                    url,
+                    name, url,
                     type: url.includes('drive.google.com') ? 'Google Drive' : 'External',
                     size: size || 'Cloud Access',
                 }),
             });
-
             document.getElementById('link-name').value = '';
             document.getElementById('link-url').value  = '';
             document.getElementById('link-size').value = '';
-
             delete state.assetCountCache[state.currentSubjectId];
-            ui.hideModal();
-            ui.setLoading(false);
+            ui.hideModal(); ui.setLoading(false);
             app.fetchFiles(state.currentSubjectId);
         } catch (err) {
             ui.setLoading(false);
@@ -450,8 +425,7 @@ const app = {
                     <p class="text-slate-400 font-medium max-w-xs mx-auto text-sm">Download materials to sync them with your offline vault.</p>
                     <button onclick="router.navigate('home')" class="mt-8 px-8 py-3 brand-gradient text-white rounded-2xl font-black uppercase tracking-widest text-[10px]">Explore Library</button>
                 </div>`;
-            lucide.createIcons();
-            return;
+            lucide.createIcons(); return;
         }
         list.innerHTML = state.vault.map((v, idx) => `
             <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:border-indigo-200 transition-all group">
@@ -483,23 +457,16 @@ const app = {
     },
 
     clearVault: () => {
-        state.vault = [];
-        localStorage.removeItem('vault');
-        app.renderOfflineFiles();
+        state.vault = []; localStorage.removeItem('vault'); app.renderOfflineFiles();
     },
 
     logout: () => {
         localStorage.clear();
-        state.user  = null;
-        state.token = null;
-        state.vault = [];
+        state.user = null; state.token = null; state.vault = [];
         router.navigate('home');
     },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  UI
-// ─────────────────────────────────────────────────────────────────────────────
 const ui = {
     toggleMobileSearch: (show) => {
         const overlay = document.getElementById('mobile-search-overlay');
@@ -545,13 +512,11 @@ const ui = {
     setLoading: (isLoading) => {
         if (isLoading) {
             const l = document.createElement('div');
-            l.id    = 'loader';
+            l.id = 'loader';
             l.className = 'fixed inset-0 z-[100] bg-white/70 backdrop-blur-md flex items-center justify-center';
-            l.innerHTML = `<div class="w-10 h-10 md:w-12 md:h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>`;
+            l.innerHTML = `<div class="w-10 h-10 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>`;
             document.body.appendChild(l);
-        } else {
-            document.getElementById('loader')?.remove();
-        }
+        } else { document.getElementById('loader')?.remove(); }
     },
 
     showModal: (id) => {
@@ -575,28 +540,20 @@ const ui = {
     },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  ROUTER
-// ─────────────────────────────────────────────────────────────────────────────
 const router = {
     navigate: (view, params = {}) => {
         state.currentView = view;
         document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
         const target = document.getElementById(`view-${view}`);
         setTimeout(() => target.classList.add('active'), 50);
-
         if (view === 'home')    app.fetchSubjects();
         if (view === 'files') { state.currentSubjectId = params.id; app.fetchFiles(params.id); }
         if (view === 'offline') app.renderOfflineFiles();
-
         ui.updateAuthUI();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  AUTH FORM
-// ─────────────────────────────────────────────────────────────────────────────
 document.getElementById('auth-toggle').onclick = () => {
     state.isLogin = !state.isLogin;
     ui.hideError();
@@ -618,11 +575,9 @@ document.getElementById('auth-form').onsubmit = async (e) => {
     e.preventDefault();
     ui.hideError();
     ui.setLoading(true);
-
     const name     = document.getElementById('auth-name').value.trim();
     const email    = e.target.querySelector('input[type="email"]').value.trim();
     const password = e.target.querySelector('input[type="password"]').value;
-
     try {
         let result;
         if (state.authMode === 'admin') {
@@ -634,12 +589,10 @@ document.getElementById('auth-form').onsubmit = async (e) => {
             if (!name) throw new Error('Please enter your name.');
             result = await apiRegister(name, email, password);
         }
-
         state.user  = result.user;
         state.token = result.token;
         localStorage.setItem('user',  JSON.stringify(result.user));
         localStorage.setItem('token', result.token);
-
         ui.setLoading(false);
         router.navigate('home');
     } catch (err) {
@@ -648,9 +601,6 @@ document.getElementById('auth-form').onsubmit = async (e) => {
     }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  INIT
-// ─────────────────────────────────────────────────────────────────────────────
 window.onload = () => {
     lucide.createIcons();
     ui.updateAuthUI();
