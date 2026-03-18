@@ -264,7 +264,29 @@ const app = {
         ui.setLoading(false);
     },
 
-    downloadToVault: (subjId, fileObj) => {
+    // downloadToVault: (subjId, fileObj) => {
+    //     const subject = state.subjects.find(s => s._id === subjId);
+    //     const exists  = state.vault.find(v => v.url === fileObj.url);
+    //     if (!exists) {
+    //         state.vault.unshift({
+    //             subjId,
+    //             subjName:  subject?.name || subjId,
+    //             branch:    subject?.branch || 'General',
+    //             fileName:  fileObj.name,
+    //             url:       fileObj.url,
+    //             timestamp: Date.now(),
+    //         });
+    //         localStorage.setItem('vault', JSON.stringify(state.vault));
+    //     }
+    //     const link = document.createElement('a');
+    //     link.href = fileObj.url; link.target = '_blank'; link.click();
+    // },
+
+// ─────────────────────────────────────────────────────────────────────────────
+// REPLACE downloadToVault function in script.js with this
+// ─────────────────────────────────────────────────────────────────────────────
+
+    downloadToVault: async (subjId, fileObj) => {
         const subject = state.subjects.find(s => s._id === subjId);
         const exists  = state.vault.find(v => v.url === fileObj.url);
         if (!exists) {
@@ -278,8 +300,30 @@ const app = {
             });
             localStorage.setItem('vault', JSON.stringify(state.vault));
         }
-        const link = document.createElement('a');
-        link.href = fileObj.url; link.target = '_blank'; link.click();
+
+        // Try to force download using fetch + blob
+        try {
+            ui.setLoading(true);
+            const response = await fetch(fileObj.url);
+            const blob     = await response.blob();
+            const blobUrl  = URL.createObjectURL(blob);
+
+            const link      = document.createElement('a');
+            link.href       = blobUrl;
+            link.download   = fileObj.name || 'document.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(blobUrl);
+            ui.setLoading(false);
+        } catch (err) {
+            // Fallback — open in new tab if download fails (e.g. Google Drive links)
+            ui.setLoading(false);
+            const link  = document.createElement('a');
+            link.href   = fileObj.url;
+            link.target = '_blank';
+            link.click();
+        }
     },
 
     deleteFile: async (fileId, subjId) => {
