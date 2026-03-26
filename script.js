@@ -58,6 +58,14 @@ async function apiCreateSubject(subjectData) {
     });
 }
 
+async function apiEditSubject(id, data) {
+    return apiRequest(`/subjects/${id}`, {
+        method:  'PATCH',
+        headers: { ...authHeader(), 'Content-Type': 'application/json' },
+        body:    JSON.stringify(data),
+    });
+}
+
 async function apiDeleteSubject(id) {
     return apiRequest(`/subjects/${id}`, {
         method:  'DELETE',
@@ -158,6 +166,10 @@ const app = {
                     <div class="flex items-center gap-2">
                         <span class="text-[7px] md:text-[8px] uppercase tracking-[0.2em] font-black px-3 py-1.5 rounded-full bg-[var(--b-bg)]" style="color: var(--b-clr)">${subj.branch}</span>
                         ${state.user?.role === 'admin' ? `
+                        <button onclick="event.stopPropagation(); app.editSubject('${subj._id}')"
+                                class="w-6 h-6 rounded-full bg-indigo-50 text-indigo-400 hover:bg-indigo-500 hover:text-white flex items-center justify-center transition-all">
+                            <i data-lucide="pencil" class="w-3 h-3"></i>
+                        </button>
                         <button onclick="event.stopPropagation(); app.deleteSubject('${subj._id}')"
                                 class="w-6 h-6 rounded-full bg-rose-50 text-rose-400 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-all">
                             <i data-lucide="x" class="w-3 h-3"></i>
@@ -264,28 +276,6 @@ const app = {
         ui.setLoading(false);
     },
 
-    // downloadToVault: (subjId, fileObj) => {
-    //     const subject = state.subjects.find(s => s._id === subjId);
-    //     const exists  = state.vault.find(v => v.url === fileObj.url);
-    //     if (!exists) {
-    //         state.vault.unshift({
-    //             subjId,
-    //             subjName:  subject?.name || subjId,
-    //             branch:    subject?.branch || 'General',
-    //             fileName:  fileObj.name,
-    //             url:       fileObj.url,
-    //             timestamp: Date.now(),
-    //         });
-    //         localStorage.setItem('vault', JSON.stringify(state.vault));
-    //     }
-    //     const link = document.createElement('a');
-    //     link.href = fileObj.url; link.target = '_blank'; link.click();
-    // },
-
-// ─────────────────────────────────────────────────────────────────────────────
-// REPLACE downloadToVault function in script.js with this
-// ─────────────────────────────────────────────────────────────────────────────
-
     downloadToVault: async (subjId, fileObj) => {
         const subject = state.subjects.find(s => s._id === subjId);
         const exists  = state.vault.find(v => v.url === fileObj.url);
@@ -357,6 +347,37 @@ const app = {
             state.assetCountCache = {};
             app.fetchSubjects();
         } catch (err) { alert(`Delete failed: ${err.message}`); }
+    },
+
+    editSubject: (id) => {
+        const subject = state.subjects.find(s => s._id === id);
+        if (!subject) return;
+        document.getElementById('edit-subj-id').value     = subject._id;
+        document.getElementById('edit-subj-name').value   = subject.name;
+        document.getElementById('edit-subj-desc').value   = subject.description || '';
+        document.getElementById('edit-subj-branch').value = subject.branch;
+        ui.showModal('modal-edit-subject');
+    },
+
+    saveEditSubject: async () => {
+        const id     = document.getElementById('edit-subj-id').value;
+        const name   = document.getElementById('edit-subj-name').value.trim();
+        const desc   = document.getElementById('edit-subj-desc').value.trim();
+        const branch = document.getElementById('edit-subj-branch').value;
+        if (!name) return alert('Subject name cannot be empty.');
+        ui.setLoading(true);
+        try {
+            const result  = await apiEditSubject(id, { name, description: desc, branch });
+            const updated = result.subject;
+            const idx     = state.subjects.findIndex(s => s._id === id);
+            if (idx !== -1) state.subjects[idx] = { ...state.subjects[idx], ...updated };
+            ui.hideModal();
+            ui.setLoading(false);
+            app.fetchSubjects();
+        } catch (err) {
+            ui.setLoading(false);
+            alert(`Update failed: ${err.message}`);
+        }
     },
 
     // ── File selection with size check ────────────────────────────────────────

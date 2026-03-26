@@ -219,29 +219,47 @@
                         <option>CS & IT</option><option>Mechanical</option><option>Civil</option>
                     </select>
                 </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-2 mb-2 block">Description (optional)</label>
+                    <input id="new-subj-desc" type="text" placeholder="e.g. Core concepts and theorems"
+                           class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold">
+                </div>
                 <button onclick="app.createSubject()" class="w-full py-5 brand-gradient text-white rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl mt-4">
                     Initialize Hub
                 </button>
             </div>
         </div>
 
-        <!-- Upload File Modal -->
-        <!-- <div id="modal-upload-file" class="hidden relative bg-white w-full max-w-lg rounded-[2.5rem] p-10 shadow-2xl">
-            <h3 class="text-2xl font-black text-slate-900 mb-2 tracking-tight">Upload Asset</h3>
-            <p class="text-slate-400 text-sm font-medium mb-8">Securely add resources to the vault.</p>
+        <!-- Edit Subject Modal -->
+        <div id="modal-edit-subject" class="hidden relative bg-white w-full max-w-lg rounded-[2.5rem] p-10 shadow-2xl">
+            <h3 class="text-2xl font-black text-slate-900 mb-2 tracking-tight">Edit Subject Hub</h3>
+            <p class="text-slate-400 text-sm font-medium mb-8">Update the name, stream or description.</p>
+            <input type="hidden" id="edit-subj-id">
             <div class="space-y-6">
-                <div class="border-2 border-dashed border-slate-100 rounded-[2rem] p-12 text-center hover:bg-slate-50 transition-colors cursor-pointer relative group">
-                    <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" onchange="app.handleFileSelection(event)" class="absolute inset-0 opacity-0 cursor-pointer">
-                    <i data-lucide="upload-cloud" class="w-10 h-10 text-slate-200 mx-auto mb-4 group-hover:text-indigo-400 transition-colors"></i>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Select PDF or Document</p>
-                    <p id="file-info" class="hidden mt-4 text-xs font-bold text-indigo-600"></p>
+                <div>
+                    <label class="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-2 mb-2 block">Hub Name</label>
+                    <input id="edit-subj-name" type="text" placeholder="e.g. Applied Mathematics"
+                           class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">
                 </div>
-                <button onclick="app.uploadFile()" class="w-full py-5 brand-gradient text-white rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl">
-                    Sync to Cloud
+                <div>
+                    <label class="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-2 mb-2 block">Target Stream</label>
+                    <select id="edit-subj-branch" class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold appearance-none outline-none focus:ring-2 focus:ring-indigo-500/20">
+                        <option>Electrical</option><option>Electronics</option>
+                        <option>CS & IT</option><option>Mechanical</option><option>Civil</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-2 mb-2 block">Description (optional)</label>
+                    <input id="edit-subj-desc" type="text" placeholder="e.g. Core concepts and theorems"
+                           class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                </div>
+                <button onclick="app.saveEditSubject()" class="w-full py-5 brand-gradient text-white rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl mt-4">
+                    Save Changes
                 </button>
             </div>
-        </div> -->
-        <!-- Upload File Modal — REPLACE the entire modal-upload-file div with this -->
+        </div>
+
+        <!-- Upload File Modal -->
         <div id="modal-upload-file" class="hidden relative bg-white w-full max-w-lg rounded-[2.5rem] p-10 shadow-2xl">
 
             <!-- Tabs -->
