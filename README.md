@@ -75,7 +75,7 @@ Deployed on **Netlify** via GitHub.
 ## 👤 Admin Access
 
 ```
-Email:    admin@gatehub.com
+Email:    xyz@admin.com
 Password: Admin@1234
 ```
 
